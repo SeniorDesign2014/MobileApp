@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  MainMenuVC.h
 //  BikeTheftTracker
 //
 //  Created by Russell Barnes on 1/12/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface MainMenuVC : UIViewController
 
 @end

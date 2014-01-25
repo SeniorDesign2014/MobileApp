@@ -14,13 +14,15 @@
 		46503B5A188342A8008C7D48 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B59188342A8008C7D48 /* main.m */; };
 		46503B5E188342A8008C7D48 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B5D188342A8008C7D48 /* AppDelegate.m */; };
 		46503B61188342A8008C7D48 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 46503B5F188342A8008C7D48 /* Main.storyboard */; };
-		46503B64188342A8008C7D48 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B63188342A8008C7D48 /* ViewController.m */; };
+		46503B64188342A8008C7D48 /* MainMenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B63188342A8008C7D48 /* MainMenuVC.m */; };
 		46503B66188342A8008C7D48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 46503B65188342A8008C7D48 /* Images.xcassets */; };
 		46503B6D188342A8008C7D48 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46503B6C188342A8008C7D48 /* XCTest.framework */; };
 		46503B6E188342A8008C7D48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46503B4D188342A8008C7D48 /* Foundation.framework */; };
 		46503B6F188342A8008C7D48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46503B51188342A8008C7D48 /* UIKit.framework */; };
 		46503B77188342A8008C7D48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 46503B75188342A8008C7D48 /* InfoPlist.strings */; };
 		46503B79188342A8008C7D48 /* BikeTheftTrackerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B78188342A8008C7D48 /* BikeTheftTrackerTests.m */; };
+		46503B84188367BC008C7D48 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B83188367BC008C7D48 /* MapViewController.m */; };
+		46503B86188367D5008C7D48 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46503B85188367D5008C7D48 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,14 +47,17 @@
 		46503B5C188342A8008C7D48 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		46503B5D188342A8008C7D48 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		46503B60188342A8008C7D48 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		46503B62188342A8008C7D48 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		46503B63188342A8008C7D48 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		46503B62188342A8008C7D48 /* MainMenuVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainMenuVC.h; sourceTree = "<group>"; };
+		46503B63188342A8008C7D48 /* MainMenuVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainMenuVC.m; sourceTree = "<group>"; };
 		46503B65188342A8008C7D48 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		46503B6B188342A8008C7D48 /* BikeTheftTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BikeTheftTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		46503B6C188342A8008C7D48 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		46503B74188342A8008C7D48 /* BikeTheftTrackerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BikeTheftTrackerTests-Info.plist"; sourceTree = "<group>"; };
 		46503B76188342A8008C7D48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		46503B78188342A8008C7D48 /* BikeTheftTrackerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BikeTheftTrackerTests.m; sourceTree = "<group>"; };
+		46503B82188367BC008C7D48 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		46503B83188367BC008C7D48 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		46503B85188367D5008C7D48 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46503B86188367D5008C7D48 /* MapKit.framework in Frameworks */,
 				46503B50188342A8008C7D48 /* CoreGraphics.framework in Frameworks */,
 				46503B52188342A8008C7D48 /* UIKit.framework in Frameworks */,
 				46503B4E188342A8008C7D48 /* Foundation.framework in Frameworks */,
@@ -101,6 +107,7 @@
 		46503B4C188342A8008C7D48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				46503B85188367D5008C7D48 /* MapKit.framework */,
 				46503B4D188342A8008C7D48 /* Foundation.framework */,
 				46503B4F188342A8008C7D48 /* CoreGraphics.framework */,
 				46503B51188342A8008C7D48 /* UIKit.framework */,
@@ -115,8 +122,10 @@
 				46503B5C188342A8008C7D48 /* AppDelegate.h */,
 				46503B5D188342A8008C7D48 /* AppDelegate.m */,
 				46503B5F188342A8008C7D48 /* Main.storyboard */,
-				46503B62188342A8008C7D48 /* ViewController.h */,
-				46503B63188342A8008C7D48 /* ViewController.m */,
+				46503B82188367BC008C7D48 /* MapViewController.h */,
+				46503B83188367BC008C7D48 /* MapViewController.m */,
+				46503B62188342A8008C7D48 /* MainMenuVC.h */,
+				46503B63188342A8008C7D48 /* MainMenuVC.m */,
 				46503B65188342A8008C7D48 /* Images.xcassets */,
 				46503B54188342A8008C7D48 /* Supporting Files */,
 			);
@@ -249,9 +258,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46503B64188342A8008C7D48 /* ViewController.m in Sources */,
+				46503B64188342A8008C7D48 /* MainMenuVC.m in Sources */,
 				46503B5E188342A8008C7D48 /* AppDelegate.m in Sources */,
 				46503B5A188342A8008C7D48 /* main.m in Sources */,
+				46503B84188367BC008C7D48 /* MapViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
