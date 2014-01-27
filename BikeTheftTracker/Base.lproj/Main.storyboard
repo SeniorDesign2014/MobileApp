@@ -43,6 +43,9 @@
                                     <color key="titleColor" red="0.48369565217391308" green="0.45106331646660192" blue="0.45340439773595193" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <segue destination="LTp-tv-QJN" kind="modal" identifier="switchToArm" id="hgM-3Q-ojF"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6pM-ht-TVw">
                                 <rect key="frame" x="50" y="277" width="220" height="59"/>
@@ -59,6 +62,33 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+        </scene>
+        <!--Arm View Controller - ArmViewController-->
+        <scene sceneID="ilQ-vk-cur">
+            <objects>
+                <viewController title="ArmViewController" id="LTp-tv-QJN" customClass="ArmViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="d2r-zw-JO0"/>
+                        <viewControllerLayoutGuide type="bottom" id="WN9-MC-EvG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="sUF-qF-lyi">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wbC-pw-3VB">
+                                <rect key="frame" x="20" y="234" width="280" height="226"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="0.33041397681230411" blue="0.28455803538590707" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FW2-02-Mli" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="748" y="268"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="FNr-5b-4AE">
@@ -82,6 +112,9 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="h0f-Om-Iky" id="LSh-NK-kNL"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3xR-CF-ehn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

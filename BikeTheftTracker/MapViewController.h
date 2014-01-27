@@ -13,6 +13,16 @@ FOUNDATION_EXPORT NSString *const *GetLocationURL;
 
 @interface MapViewController : UIViewController <MKMapViewDelegate>
 
+// Unique identifier for this user (not to be confused with ID of BTT module)
 @property (nonatomic) NSString *appid;
+
+@property (weak, nonatomic) IBOutlet MKMapView *mapView;
+
+
+// The point to display on the map
+@property (nonatomic, strong) MKPointAnnotation *point;
+
+// Coordinates from the server
+@property (nonatomic) NSArray *locations;
 
 @end

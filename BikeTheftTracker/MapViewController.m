@@ -28,21 +28,60 @@
 {
     [super viewDidLoad];
     
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
     // Define constants
     NSString *const GetLocationURL = @"http://bikethefttracker.appspot.com/getlocation";
-
+    
     NSLog(@"appid: %@", self.appid);
     
     // Request bike location data
     NSURLSession *session = [NSURLSession sharedSession];
     [[session dataTaskWithURL:[NSURL URLWithString:GetLocationURL]
-        completionHandler:^(NSData *data,
-                            NSURLResponse *response,
-                            NSError *error) {
-            // handle response
-            NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-        }
-    ] resume];
+            completionHandler:^(NSData *data,
+                                NSURLResponse *response,
+                                NSError *error) {
+                // handle response
+                //NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                NSError *jsonError;
+                NSArray *locationsFromServer = [NSJSONSerialization JSONObjectWithData:data
+                                                                     options:NSJSONReadingAllowFragments
+                                                                       error:&jsonError];
+                self.locations = [[NSArray alloc] initWithArray:locationsFromServer];
+                
+                NSLog(@"JSON data: %@", self.locations);
+                NSLog(@"First location - X: %f", [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue]);
+                
+                [self didReceiveLocationData];
+            }
+      ] resume];
+}
+
+- (void)didReceiveLocationData
+{
+    CLLocationCoordinate2D eventLocation;
+    eventLocation.latitude = [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue];
+    eventLocation.longitude = [[[self.locations objectAtIndex:0] objectForKey:@"Y"] floatValue];
+    
+    // Display a point where the cooridnates are
+    self.point = [[MKPointAnnotation alloc] init];
+    [self.point setCoordinate:(CLLocationCoordinate2D)CLLocationCoordinate2DMake(eventLocation.latitude, eventLocation.longitude)];
+    
+    // Add title
+    [self.point setTitle:[[self.locations objectAtIndex:0] objectForKey:@"Date"]];
+    //[self.point setSubtitle:[[locations objectAtIndex:0] objectForKey:@"Clientid"]];
+    
+    // Add the annotation point
+    [self.mapView addAnnotation:self.point];
+    
+    // The window to display around the event
+    MKCoordinateRegion windowRegion = MKCoordinateRegionMakeWithDistance(eventLocation, 800, 800);
+    // Zoom to the location of the Last.FM event found in ViewController
+    [_mapView setRegion:windowRegion animated:YES];
+    
+    NSLog(@"Confirming location data - X: %f", [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue]);
 }
 
 - (void)didReceiveMemoryWarning
