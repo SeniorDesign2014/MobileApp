@@ -21,6 +21,12 @@
 // The spinning loading indicator
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingAnimation;
 
+// The text displaying if BTT is armed/unarmed/searching
+@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+
+// Switch to arm/disarm once connected
+@property (weak, nonatomic) IBOutlet UISwitch *armSwitch;
+
 @end
 
 
@@ -150,6 +156,10 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
     NSLog(@"The String is %@", stringFromData);
     
     // *** TODO during integration - change status to reflect armed/unarmed state ***
+    [self.loadingAnimation stopAnimating];
+    self.statusLabel.text = @"Unarmed";
+    self.armSwitch.enabled = TRUE;
+    
     
     // *** TODO during integration - Deactivate stolen state? ***
     

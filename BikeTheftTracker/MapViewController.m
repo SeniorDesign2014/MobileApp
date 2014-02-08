@@ -11,6 +11,9 @@
 
 @interface MapViewController ()
 
+// Text above the map ("Loading..." by default)
+@property (weak, nonatomic) IBOutlet UILabel *mapUpperCaption;
+
 @end
 
 @implementation MapViewController
@@ -28,6 +31,8 @@
 {
     [super viewDidLoad];
     
+    // Add newline to label
+    self.mapUpperCaption.text = @"Searching...\r ";
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -55,7 +60,7 @@
                 self.locations = [[NSArray alloc] initWithArray:locationsFromServer];
                 
                 NSLog(@"JSON data: %@", self.locations);
-                NSLog(@"First location - X: %f", [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue]);
+                //NSLog(@"First location - X: %f", [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue]);
                 
                 [self didReceiveLocationData];
             }
@@ -84,7 +89,43 @@
     // Zoom to the location of the Last.FM event found in ViewController
     [_mapView setRegion:windowRegion animated:YES];
     
-    NSLog(@"Confirming location data - X: %f", [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue]);
+    // Display the time at which this location was received by the server
+    NSDateFormatter *dateFromServerFormatter, *dateOfLocationFormatter;
+    NSDate *dateOfLocation;
+    NSString *locationDate, *locationTime;
+    
+    // Convert the RFC 3339 date-time string to an NSDate
+    dateFromServerFormatter = [[NSDateFormatter alloc] init];
+    assert(dateFromServerFormatter != nil);
+    
+    [dateFromServerFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSSSSS'Z'"];
+    [dateFromServerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    
+    dateOfLocation = [dateFromServerFormatter dateFromString:[[self.locations objectAtIndex:0] objectForKey:@"Date"]];
+    NSLog(@"iOS date: %@", dateOfLocation);
+    
+    // Convert the NSDate to a user-visible date string.
+    
+    dateOfLocationFormatter = [[NSDateFormatter alloc] init];
+    assert(dateOfLocationFormatter != nil);
+    
+    [dateOfLocationFormatter setDateStyle:NSDateFormatterMediumStyle];
+    [dateOfLocationFormatter setTimeStyle:NSDateFormatterNoStyle];
+    
+    locationDate = [dateOfLocationFormatter stringFromDate:dateOfLocation];
+    
+    [dateOfLocationFormatter setDateStyle:NSDateFormatterNoStyle];
+    [dateOfLocationFormatter setTimeStyle:NSDateFormatterShortStyle];
+    
+    locationTime = [dateOfLocationFormatter stringFromDate:dateOfLocation];
+    
+    NSLog(@"Formatted date: %@", locationTime);
+    
+    // Update the Map caption on the main thread to avoid long delay
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.mapUpperCaption.text = [NSString stringWithFormat:@"Spotted on %@ at %@", locationDate, locationTime];
+    });
+    
 }
 
 - (void)didReceiveMemoryWarning
