@@ -104,6 +104,9 @@
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="oAf-C3-nw5">
                                 <rect key="frame" x="251" y="133" width="51" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="armSwitchFlipped:" destination="LTp-tv-QJN" eventType="valueChanged" id="ebD-bH-p9I"/>
+                                </connections>
                             </switch>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="VZV-wh-AFw">
                                 <rect key="frame" x="142" y="256" width="37" height="37"/>
@@ -179,6 +182,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="3u5-OF-f2u"/>
+        <segue reference="SjO-wP-Sx8"/>
     </inferredMetricsTieBreakers>
 </document>

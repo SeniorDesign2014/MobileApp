@@ -50,8 +50,8 @@
                                               cancelButtonTitle:@"OK"
                                               otherButtonTitles:nil];
         [alert show];
-        //[alert release];
     }
+    
     NSLog(@"BT view loaded");
 }
 
@@ -161,8 +161,19 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
     self.armSwitch.enabled = TRUE;
     
     
+    
     // *** TODO during integration - Deactivate stolen state? ***
     
+}
+
+// When the switch is flipped
+- (IBAction)armSwitchFlipped:(id)sender {
+    if (self.armSwitch.on) {
+        // Switch was just flipped on
+    }
+    else {
+        // Switch was just flipped off
+    }
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
