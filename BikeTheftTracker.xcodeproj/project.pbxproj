@@ -25,6 +25,7 @@
 		46503B79188342A8008C7D48 /* BikeTheftTrackerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B78188342A8008C7D48 /* BikeTheftTrackerTests.m */; };
 		46503B84188367BC008C7D48 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B83188367BC008C7D48 /* MapViewController.m */; };
 		46503B86188367D5008C7D48 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46503B85188367D5008C7D48 /* MapKit.framework */; };
+		46C1214C18A5BB2000545875 /* GAEData.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C1214B18A5BB2000545875 /* GAEData.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,8 @@
 		46503B82188367BC008C7D48 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		46503B83188367BC008C7D48 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		46503B85188367D5008C7D48 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		46C1214A18A5BB2000545875 /* GAEData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAEData.h; sourceTree = "<group>"; };
+		46C1214B18A5BB2000545875 /* GAEData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GAEData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +136,8 @@
 				461C242818960AD400514C0D /* ArmViewController.m */,
 				46503B82188367BC008C7D48 /* MapViewController.h */,
 				46503B83188367BC008C7D48 /* MapViewController.m */,
+				46C1214A18A5BB2000545875 /* GAEData.h */,
+				46C1214B18A5BB2000545875 /* GAEData.m */,
 				46503B62188342A8008C7D48 /* MainMenuVC.h */,
 				46503B63188342A8008C7D48 /* MainMenuVC.m */,
 				46503B65188342A8008C7D48 /* Images.xcassets */,
@@ -273,6 +278,7 @@
 				461C242918960AD400514C0D /* ArmViewController.m in Sources */,
 				46503B64188342A8008C7D48 /* MainMenuVC.m in Sources */,
 				46503B5E188342A8008C7D48 /* AppDelegate.m in Sources */,
+				46C1214C18A5BB2000545875 /* GAEData.m in Sources */,
 				46503B5A188342A8008C7D48 /* main.m in Sources */,
 				46503B84188367BC008C7D48 /* MapViewController.m in Sources */,
 			);

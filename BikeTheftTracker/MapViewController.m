@@ -33,7 +33,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     // Define constants
-    NSString *const GetLocationURL = @"http://bikethefttracker.appspot.com/getlocation";
+    
+    // Object containing our Google App Engine URLs (closed-source for privacy)
+    GAEData *oregonStateAccount = [[GAEData alloc] init];
+    NSString *const GetLocationURL = [NSString stringWithFormat:@"%@", oregonStateAccount.GetLocationURL];
     
     NSLog(@"appid: %@", self.appid);
     

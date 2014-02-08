@@ -10,6 +10,7 @@ FOUNDATION_EXPORT NSString *const *GetLocationURL;
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "GAEData.h" // Data for contacting our app engine server (closed-source for privacy)
 
 @interface MapViewController : UIViewController <MKMapViewDelegate>
 
