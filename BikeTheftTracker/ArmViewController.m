@@ -42,7 +42,7 @@
     self.myCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
     
     // If Bluetooth is not turned on, ask the iPhone user to turn it on
-    if (self.myCentralManager.state != CBCentralManagerStatePoweredOn) {
+    /*if (self.myCentralManager.state != CBCentralManagerStatePoweredOn) {
         NSLog(@"Bluetooth is not turned on");
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bluetooth Connection"
                                                         message:@"You must turn Bluetooth on in device settings in order to communicate with the Bike Theft Tracker."
@@ -50,7 +50,7 @@
                                               cancelButtonTitle:@"OK"
                                               otherButtonTitles:nil];
         [alert show];
-    }
+    }*/
     
     NSLog(@"BT view loaded");
 }
@@ -117,14 +117,26 @@ didDiscoverCharacteristicsForService:(CBService *)service
             error:(NSError *)error {
     
     for (CBCharacteristic *characteristic in service.characteristics) {
-        NSLog(@"Discovered characteristic: %@", characteristic.UUID.data);
+        //NSLog(@"Discovered characteristic; data: %@", characteristic.UUID.data);
         
-        NSMutableString *stringFromData = [[NSMutableString alloc] initWithData:characteristic.UUID.data encoding:NSUTF8StringEncoding];
+        NSString *characteristicName = [NSString stringWithFormat:@"%@", characteristic.UUID.data];
         
-        NSLog(@"The characteristic name string is %@", stringFromData);
+        NSLog(@"Discovered characteristic: %@", characteristicName);
         
         // Read the characteristic's value
         [peripheral readValueForCharacteristic:characteristic];
+        
+        // *** DEBUG - write data to Bluetooth characteristic
+        
+        if ([characteristicName isEqualToString:@"<bbbb>"]) {
+            
+            NSString *stringToWrite = @"abcdefg";
+            NSData *dataToWrite = [stringToWrite dataUsingEncoding:NSUTF8StringEncoding];
+            
+            // Write to Bluetooth device - callback is peripheral:didwritevalueforcharacteristics:error
+            [peripheral writeValue:dataToWrite forCharacteristic:characteristic
+                              type:CBCharacteristicWriteWithResponse];
+        }
     }
 }
 
@@ -150,20 +162,36 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
     
     NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
     
-    NSLog(@"Value %@",value);
-    NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    //NSLog(@"Value %@",value);
     
-    NSLog(@"The String is %@", stringFromData);
+    if (value) {
+        
+        NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        
+        NSLog(@"The String is %@", stringFromData);
+        
+        // *** TODO during integration - change status to reflect armed/unarmed state ***
+        [self.loadingAnimation stopAnimating];
+        self.statusLabel.text = @"Unarmed";
+        self.armSwitch.enabled = TRUE;
+        
+        
+        // *** TODO during integration - Deactivate stolen state? ***
+    }
+}
+
+// Callback for Bluetooth write
+- (void)peripheral:(CBPeripheral *)peripheral
+didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
+             error:(NSError *)error {
     
-    // *** TODO during integration - change status to reflect armed/unarmed state ***
-    [self.loadingAnimation stopAnimating];
-    self.statusLabel.text = @"Unarmed";
-    self.armSwitch.enabled = TRUE;
-    
-    
-    
-    // *** TODO during integration - Deactivate stolen state? ***
-    
+    if (error) {
+        NSLog(@"Error writing to Bluetooth device: %@",
+              [error localizedDescription]);
+    }
+    else {
+        NSLog(@"Write to Bluetooth device was successful.");
+    }
 }
 
 // When the switch is flipped
