@@ -79,8 +79,7 @@
     //NSLog(@"RSI: %@", RSSI);
     
     // If this is the device that we're looking for, stop the scan
-    // *** TODO during integration - look for our peripheral's name ***
-    if (TRUE) {
+    if ([peripheral.name isEqualToString:@"BikeTheftTracker"]) {
         
         [central stopScan];
         NSLog(@"Matching device found.");
@@ -128,9 +127,9 @@ didDiscoverCharacteristicsForService:(CBService *)service
         
         // *** DEBUG - write data to Bluetooth characteristic
         
-        if ([characteristicName isEqualToString:@"<bbbb>"]) {
+        if ([characteristicName isEqualToString:@"<5fc569a0 74a94fa4 b8b78354 c86e45a4>"]) {
             
-            NSString *stringToWrite = @"abcdefg";
+            NSString *stringToWrite = @"hijklmnop";
             NSData *dataToWrite = [stringToWrite dataUsingEncoding:NSUTF8StringEncoding];
             
             // Write to Bluetooth device - callback is peripheral:didwritevalueforcharacteristics:error
@@ -143,7 +142,8 @@ didDiscoverCharacteristicsForService:(CBService *)service
 // Called when the app reads a characteristic or the peripheral notifies the app of a change
 - (void)peripheral:(CBPeripheral *)peripheral
 didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
-             error:(NSError *)error {
+             error:(NSError *)error
+{
     
     NSData *data = characteristic.value;
     // parse the data as needed
@@ -160,9 +160,9 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
         }
     }*/
     
-    NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
+    NSLog(@"The raw value is %@",characteristic.value);
     
-    //NSLog(@"Value %@",value);
+    NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
     
     if (value) {
         
@@ -183,7 +183,8 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
 // Callback for Bluetooth write
 - (void)peripheral:(CBPeripheral *)peripheral
 didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
-             error:(NSError *)error {
+             error:(NSError *)error
+{
     
     if (error) {
         NSLog(@"Error writing to Bluetooth device: %@",
@@ -195,7 +196,8 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
 }
 
 // When the switch is flipped
-- (IBAction)armSwitchFlipped:(id)sender {
+- (IBAction)armSwitchFlipped:(id)sender
+{
     if (self.armSwitch.on) {
         // Switch was just flipped on
     }
@@ -218,5 +220,24 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+/*
+-(NSString *)GetServiceName:(CBUUID *)UUID{
+    
+    UInt16 _uuid = [self CBUUIDToInt:UUID];
+    NSString *characteristicName = [NSString stringWithFormat:@"%@", characteristic.UUID.data];
+
+    
+    switch(_uuid)
+    {
+        case 0x2A2D: return @"Latitude"; break;
+        case 0x2A2E: return @"Longitude"; break;
+        case 0x2A2F: return @"Position 2D"; break;
+        case 0x2A30: return @"Position 3D"; break;
+        default:
+            return @"Unknkown Characteristic";
+            break;
+    }
+}*/
 
 @end
