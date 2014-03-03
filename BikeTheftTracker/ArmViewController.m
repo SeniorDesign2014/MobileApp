@@ -65,8 +65,33 @@
 // The text displaying if BTT is armed/unarmed/searching
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
-// Switch to arm/disarm once connected
+// Switch to arm/disarm the BTT once connected
 @property (weak, nonatomic) IBOutlet UISwitch *armSwitch;
+
+// "Settings" label
+@property (weak, nonatomic) IBOutlet UILabel *settingsLabel;
+
+// "Sound" label
+@property (weak, nonatomic) IBOutlet UILabel *soundLabel;
+
+// "Alarm Type" label
+@property (weak, nonatomic) IBOutlet UILabel *alarmTypeLabel;
+
+// "Alarm Delay" label
+@property (weak, nonatomic) IBOutlet UILabel *alarmDelayLabel;
+
+// Turn audio alarm on/off on the BTT
+@property (weak, nonatomic) IBOutlet UISwitch *soundSwitch;
+
+// Choose type of audio alarm for BTT
+@property (weak, nonatomic) IBOutlet UISegmentedControl *alarmTypeControl;
+
+// Slider to choose alarm delay
+@property (weak, nonatomic) IBOutlet UISlider *alarmDelaySlider;
+
+// String values selected by slider
+@property (nonatomic, strong) NSArray *alarmDelayValues;
+
 
 @end
 
@@ -79,16 +104,35 @@
 - (void)bttConnected
 {
     [self.loadingAnimation stopAnimating];
-    self.statusLabel.text = @"Unarmed";
-    self.armSwitch.enabled = TRUE;
     
+    // Set armed status
     unichar armed[1];
     [self.bttData getCharacters:armed range:NSMakeRange(1, 1)];
-    if (armed[0] == '0')
+    if (armed[0] == '0') {
         self.armSwitch.on = FALSE;
-    else if (armed[0] == '1')
+        self.statusLabel.text = @"Unarmed";
+    }
+    else if (armed[0] == '1') {
         self.armSwitch.on = TRUE;
+        self.statusLabel.text = @"Armed";
+    }
     
+    // Set audio alert status
+    
+    // Set audio alert delay
+    
+    // Set audio alert type
+    
+    // Enable UI elements
+    self.armSwitch.enabled = true;
+    self.settingsLabel.enabled = true;
+    self.soundLabel.enabled = true;
+    self.alarmTypeLabel.enabled = true;
+    self.alarmDelayLabel.enabled = true;
+    self.soundSwitch.enabled = true;
+    self.soundSwitch.enabled = true;
+    self.alarmTypeControl.enabled = true;
+    self.alarmDelaySlider.enabled = true;
 }
 
 // When the switch is flipped
@@ -108,6 +152,18 @@
         [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(1, 1) withString:@"0"];
         [self bttUpdate];
     }
+}
+
+// Value of slider changed
+- (void)valueChanged:(UISlider*)sender
+{
+    NSUInteger index = (NSUInteger)(self.alarmDelaySlider.value + 0.5); // Round the number.
+    [self.alarmDelaySlider setValue:index animated:NO];
+    
+    // Update value and write to module (0, 1 or 3 minutes)
+    [self.bttDataToWrite setString:self.bttData];
+    [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(4, 1) withString:[self.alarmDelayValues objectAtIndex:index]];
+    [self bttUpdate];
 }
 
 // Write bttDataToWrite to the Bluetooth module
@@ -132,6 +188,14 @@
     
     // Init properties
     self.bttDataToWrite = [[NSMutableString alloc] init];
+    
+    // Alarm delay slider values
+    self.alarmDelayValues = [[NSArray alloc] initWithObjects:@"0", @"1", @"3", nil];
+    
+    self.alarmDelaySlider.continuous = false; // Slider should not snap-to when dragging
+    [self.alarmDelaySlider addTarget:self
+               action:@selector(valueChanged:)
+     forControlEvents:UIControlEventValueChanged];
     
     // Create a new Bluetooth central
     self.myCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
