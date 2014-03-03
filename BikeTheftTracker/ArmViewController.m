@@ -7,7 +7,35 @@
 //
 //  Called by the "Arm my bike" button.
 //  Searches for a matching Bluetooth 4.0 peripheral nearby.
-//  Reads current status automatically and writes to it.
+//  Reads current status and writes to it.
+
+/* 
+ DATA EXCHANGE FORMAT
+ 
+ Byte0 	-	Secret Handshake
+     App ID: (ascii “0” or hex 0x30)
+ 
+ Byte1	- 	Arm/Disarm
+     Disarm: (ascii “0” or hex 0x30)
+     Arm: (ascii “1” or hex 0x31)
+ 
+ Byte2	-	Sound On/Off
+     Off: (ascii “0” or hex 0x30)
+     On: (ascii “1” or hex 0x31)
+ 
+ 
+ Byte3 	-	Sound Selection
+     Sound0: (ascii “0” or hex 0x30)
+     Sound1: (ascii “1” or hex 0x31)
+     Sound2: (ascii “2” or hex 0x32)
+     Sound3: (ascii “3” or hex 0x33)
+     Sound4: (ascii “4” or hex 0x34)
+ 
+ Byte4 	-	Sound Time Delay
+     Delay 0m: (ascii “0” or hex 0x30)
+     Delay 1m: (ascii “1” or hex 0x31)
+     Delay 3m: (ascii “3” or hex 0x33)
+ */
 
 #import "ArmViewController.h"
 
@@ -17,6 +45,19 @@
 
 // Bluetooth peripheral to connect to (BTT)
 @property (nonatomic) CBPeripheral *peripheral;
+
+// Characteristic to read from the Bluetooth module (tx)
+@property (nonatomic, strong) CBCharacteristic *readcharacteristic;
+
+// Characteristic to write to the Bluetooth module (rx)
+@property (nonatomic, strong) CBCharacteristic *writecharacteristic;
+
+// Value from the BTT tx characteristic
+@property (nonatomic, strong) NSString *bttData;
+
+// Value from the BTT tx characteristic
+@property (nonatomic, strong) NSMutableString *bttDataToWrite;
+
 
 // The spinning loading indicator
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingAnimation;
@@ -34,9 +75,63 @@
 
 @implementation ArmViewController
 
+// Update UI to reflect new data from Bluetooth module
+- (void)bttConnected
+{
+    [self.loadingAnimation stopAnimating];
+    self.statusLabel.text = @"Unarmed";
+    self.armSwitch.enabled = TRUE;
+    
+    unichar armed[1];
+    [self.bttData getCharacters:armed range:NSMakeRange(1, 1)];
+    if (armed[0] == '0')
+        self.armSwitch.on = FALSE;
+    else if (armed[0] == '1')
+        self.armSwitch.on = TRUE;
+    
+}
+
+// When the switch is flipped
+- (IBAction)armSwitchFlipped:(id)sender
+{
+    if (self.armSwitch.on) {
+        // Switch was just flipped on
+        
+        [self.bttDataToWrite setString:self.bttData];
+        [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(1, 1) withString:@"1"];
+        [self bttUpdate];
+    }
+    else {
+        // Switch was just flipped off
+        
+        [self.bttDataToWrite setString:self.bttData];
+        [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(1, 1) withString:@"0"];
+        [self bttUpdate];
+    }
+}
+
+// Write bttDataToWrite to the Bluetooth module
+- (void)bttUpdate
+{
+    // Ensure that writecharacteristic has been discovered
+    if (!self.writecharacteristic) {
+        NSLog(@"ERROR: Write characteristic has not been discovered");
+        return;
+    }
+    NSString *stringToWrite = self.bttDataToWrite;
+    NSData *dataToWrite = [stringToWrite dataUsingEncoding:NSUTF8StringEncoding];
+    
+    // Write to Bluetooth device - callback is peripheral:didwritevalueforcharacteristics:error
+    [self.peripheral writeValue:dataToWrite forCharacteristic:self.writecharacteristic
+                      type:CBCharacteristicWriteWithResponse];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Init properties
+    self.bttDataToWrite = [[NSMutableString alloc] init];
     
     // Create a new Bluetooth central
     self.myCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
@@ -73,7 +168,6 @@
 // Called each time a device is discovered in bluetoothPoweredOn
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    NSLog(@"Device Discovered");
     NSLog(@"Peripheral Name: %@", peripheral.name);
     //NSLog(@"Device: %@", advertisementData);
     //NSLog(@"RSI: %@", RSSI);
@@ -93,17 +187,18 @@
 
 // Connected to device
 - (void)centralManager:(CBCentralManager *)central
-  didConnectPeripheral:(CBPeripheral *)peripheral {
+  didConnectPeripheral:(CBPeripheral *)peripheral
+{
     
     peripheral.delegate = self;
-    NSLog(@"Peripheral connected");
     // *** TODO during integration - Replace nil with service that we want ***
     [peripheral discoverServices:nil];
 }
 
 // Service(s) discovered
 - (void)peripheral:(CBPeripheral *)peripheral
-didDiscoverServices:(NSError *)error {
+didDiscoverServices:(NSError *)error
+{
     
     for (CBService *service in peripheral.services) {
         NSLog(@"Discovered service: %@", service);
@@ -111,9 +206,11 @@ didDiscoverServices:(NSError *)error {
     }
 }
 
+// Characteristic(s) discovered
 - (void)peripheral:(CBPeripheral *)peripheral
 didDiscoverCharacteristicsForService:(CBService *)service
-            error:(NSError *)error {
+            error:(NSError *)error
+{
     
     for (CBCharacteristic *characteristic in service.characteristics) {
         //NSLog(@"Discovered characteristic; data: %@", characteristic.UUID.data);
@@ -122,19 +219,21 @@ didDiscoverCharacteristicsForService:(CBService *)service
         
         NSLog(@"Discovered characteristic: %@", characteristicName);
         
-        // Read the characteristic's value
-        [peripheral readValueForCharacteristic:characteristic];
-        
-        // *** DEBUG - write data to Bluetooth characteristic
-        
-        if ([characteristicName isEqualToString:@"<5fc569a0 74a94fa4 b8b78354 c86e45a4>"]) {
+        if ([characteristicName isEqualToString:@"<21819ab0 c9374188 b0dbb962 1e1696cd>"]) {    // READ characteristic
             
-            NSString *stringToWrite = @"hijklmnop";
-            NSData *dataToWrite = [stringToWrite dataUsingEncoding:NSUTF8StringEncoding];
+            // Save the characteristic for later use
+            self.readcharacteristic = characteristic;
             
-            // Write to Bluetooth device - callback is peripheral:didwritevalueforcharacteristics:error
-            [peripheral writeValue:dataToWrite forCharacteristic:characteristic
-                              type:CBCharacteristicWriteWithResponse];
+            // Read the tx characteristic's values
+            [peripheral readValueForCharacteristic:characteristic];
+            
+            // Subscribe to notify changes for this characteristic
+            [peripheral setNotifyValue:YES forCharacteristic:characteristic];
+        }
+        else if ([characteristicName isEqualToString:@"<5fc569a0 74a94fa4 b8b78354 c86e45a4>"]) {   // WRITE characteristic
+            
+            // Save the characteristic for later use
+            self.writecharacteristic = characteristic;
         }
     }
 }
@@ -144,12 +243,36 @@ didDiscoverCharacteristicsForService:(CBService *)service
 didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error
 {
+    // Ensure that this is the BTT's tx characteristic
+    NSString *characteristicName = [NSString stringWithFormat:@"%@", characteristic.UUID.data];
+    if ([characteristicName isEqualToString:@"<21819ab0 c9374188 b0dbb962 1e1696cd>"]) {    // READ characteristic
+        
+        
+        NSLog(@"The raw value is %@",characteristic.value);
+        
+        NSData *data = characteristic.value;
+        
+        NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
+        
+        if (value) {
+            
+            NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            
+            NSLog(@"The String is %@", stringFromData);
+            
+            // Save data
+            self.bttData = stringFromData;
+            
+            // Parse data and display it
+            [self bttConnected];
+        }
+    }
     
-    NSData *data = characteristic.value;
+    /*
     // parse the data as needed
     //NSLog(@"Data from char: %@", data);
     
-    /*NSMutableString *stringFromData = [NSMutableString stringWithString:@""];
+    NSMutableString *stringFromData = [NSMutableString stringWithString:@""];
     
     for (int i = 0; i < characteristic.value.length; i++) {
         unsigned char _byte;
@@ -159,25 +282,6 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
             [stringFromData appendFormat:@"%c", _byte];
         }
     }*/
-    
-    NSLog(@"The raw value is %@",characteristic.value);
-    
-    NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
-    
-    if (value) {
-        
-        NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        
-        NSLog(@"The String is %@", stringFromData);
-        
-        // *** TODO during integration - change status to reflect armed/unarmed state ***
-        [self.loadingAnimation stopAnimating];
-        self.statusLabel.text = @"Unarmed";
-        self.armSwitch.enabled = TRUE;
-        
-        
-        // *** TODO during integration - Deactivate stolen state? ***
-    }
 }
 
 // Callback for Bluetooth write
@@ -193,17 +297,8 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     else {
         NSLog(@"Write to Bluetooth device was successful.");
     }
-}
-
-// When the switch is flipped
-- (IBAction)armSwitchFlipped:(id)sender
-{
-    if (self.armSwitch.on) {
-        // Switch was just flipped on
-    }
-    else {
-        // Switch was just flipped off
-    }
+    
+    // TODO: indicate successful write in UI if this is the rxchar
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -221,8 +316,7 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     // Dispose of any resources that can be recreated.
 }
 
-/*
--(NSString *)GetServiceName:(CBUUID *)UUID{
+/*-(NSString *)GetServiceName:(CBUUID *)UUID{
     
     UInt16 _uuid = [self CBUUIDToInt:UUID];
     NSString *characteristicName = [NSString stringWithFormat:@"%@", characteristic.UUID.data];
