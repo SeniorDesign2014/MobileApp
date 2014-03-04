@@ -113,6 +113,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="armSwitchFlipped:" destination="LTp-tv-QJN" eventType="valueChanged" id="xLF-Xy-urW"/>
+                                    <action selector="soundSwitchFlipped:" destination="LTp-tv-QJN" eventType="valueChanged" id="uTr-yL-DaS"/>
                                 </connections>
                             </switch>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="VZV-wh-AFw">
@@ -147,7 +148,7 @@
                                 <color key="textColor" red="0.36918308420000001" green="0.35632176809999999" blue="0.34260667919999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-Bg-QKz">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-Bg-QKz">
                                 <rect key="frame" x="32" y="337" width="255" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
@@ -158,6 +159,9 @@
                                     <segment title="Five"/>
                                 </segments>
                                 <color key="tintColor" red="0.47210427989999998" green="0.45565747439999998" blue="0.43811888059999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="alarmSegmentControlChanged:" destination="LTp-tv-QJN" eventType="valueChanged" id="klW-UC-M74"/>
+                                </connections>
                             </segmentedControl>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="2" translatesAutoresizingMaskIntoConstraints="NO" id="vJc-WN-ruW">
                                 <rect key="frame" x="30" y="419" width="259" height="34"/>
@@ -169,7 +173,7 @@
                     <connections>
                         <outlet property="alarmDelayLabel" destination="Xul-lk-NDS" id="hU5-0R-1o4"/>
                         <outlet property="alarmDelaySlider" destination="vJc-WN-ruW" id="QIg-uT-jWb"/>
-                        <outlet property="alarmTypeControl" destination="x8N-Bg-QKz" id="EUE-lD-HQW"/>
+                        <outlet property="alarmSegmentControl" destination="x8N-Bg-QKz" id="hsT-ZE-y7C"/>
                         <outlet property="alarmTypeLabel" destination="BGr-Z5-gZu" id="phy-3Z-ogb"/>
                         <outlet property="armSwitch" destination="oAf-C3-nw5" id="gAj-sW-mum"/>
                         <outlet property="loadingAnimation" destination="VZV-wh-AFw" id="fiy-0q-K5l"/>

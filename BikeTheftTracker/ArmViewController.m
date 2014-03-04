@@ -35,7 +35,7 @@
      Delay 0m: (ascii “0” or hex 0x30)
      Delay 1m: (ascii “1” or hex 0x31)
      Delay 3m: (ascii “3” or hex 0x33)
- */
+*/
 
 #import "ArmViewController.h"
 
@@ -83,8 +83,7 @@
 // Turn audio alarm on/off on the BTT
 @property (weak, nonatomic) IBOutlet UISwitch *soundSwitch;
 
-// Choose type of audio alarm for BTT
-@property (weak, nonatomic) IBOutlet UISegmentedControl *alarmTypeControl;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *alarmSegmentControl;
 
 // Slider to choose alarm delay
 @property (weak, nonatomic) IBOutlet UISlider *alarmDelaySlider;
@@ -99,6 +98,8 @@
 
 
 @implementation ArmViewController
+
+#pragma mark BTT Control Functions
 
 // Update UI to reflect new data from Bluetooth module
 - (void)bttConnected
@@ -116,6 +117,30 @@
         self.armSwitch.on = TRUE;
         self.statusLabel.text = @"Armed";
     }
+    // TODO: add loading indicator for changing a value
+    // text doesn't change until receive even though switch is flipped
+    
+    // Set audio status
+    unichar audio[1];
+    [self.bttData getCharacters:audio range:NSMakeRange(2, 1)];
+    if (audio[0] == '0') {
+        self.soundSwitch.on = FALSE;
+    }
+    else if (audio[0] == '1') {
+        self.soundSwitch.on = TRUE;
+    }
+    
+    // Set sound selection
+    unichar selection[1];
+    [self.bttData getCharacters:selection range:NSMakeRange(3, 1)];
+    [self.alarmSegmentControl setSelectedSegmentIndex:[[NSNumber numberWithChar:selection[0]] integerValue] - 48];
+    
+    // Set alarm delay
+    unichar delay[1];
+    [self.bttData getCharacters:delay range:NSMakeRange(4, 1)];
+    NSUInteger sliderIndex = (NSUInteger)([[NSNumber numberWithChar:delay[0]] unsignedIntegerValue] - 48);   // Round the number.
+    [self.alarmDelaySlider setValue:sliderIndex animated:true];
+    
     
     // Set audio alert status
     
@@ -131,14 +156,14 @@
     self.alarmDelayLabel.enabled = true;
     self.soundSwitch.enabled = true;
     self.soundSwitch.enabled = true;
-    self.alarmTypeControl.enabled = true;
+    self.alarmSegmentControl.enabled = true;
     self.alarmDelaySlider.enabled = true;
 }
 
-// When the switch is flipped
+// When the armed/disarmed/searching switch is flipped
 - (IBAction)armSwitchFlipped:(id)sender
 {
-    if (self.armSwitch.on) {
+    if (((UISwitch *)sender).on) {
         // Switch was just flipped on
         
         [self.bttDataToWrite setString:self.bttData];
@@ -154,8 +179,34 @@
     }
 }
 
+// Sound switch changed
+- (IBAction)soundSwitchFlipped:(id)sender
+{
+    if (((UISwitch *)sender).on) {
+        // Switch was just flipped on
+        
+        [self.bttDataToWrite setString:self.bttData];
+        [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(2, 1) withString:@"1"];
+        [self bttUpdate];
+    }
+    else {
+        // Switch was just flipped off
+        
+        [self.bttDataToWrite setString:self.bttData];
+        [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(2, 1) withString:@"0"];
+        [self bttUpdate];
+    }
+}
+
+// Alarm Type changed
+- (IBAction)alarmSegmentControlChanged:(id)sender {
+    [self.bttDataToWrite setString:self.bttData];
+    [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(3, 1) withString:[NSString stringWithFormat:@"%d", ((UISegmentedControl *)sender).selectedSegmentIndex]];
+    [self bttUpdate];
+}
+
 // Value of slider changed
-- (void)valueChanged:(UISlider*)sender
+- (void)sliderChanged:(UISlider*)sender
 {
     NSUInteger index = (NSUInteger)(self.alarmDelaySlider.value + 0.5); // Round the number.
     [self.alarmDelaySlider setValue:index animated:NO];
@@ -194,7 +245,7 @@
     
     self.alarmDelaySlider.continuous = false; // Slider should not snap-to when dragging
     [self.alarmDelaySlider addTarget:self
-               action:@selector(valueChanged:)
+               action:@selector(sliderChanged:)
      forControlEvents:UIControlEventValueChanged];
     
     // Create a new Bluetooth central
@@ -210,9 +261,9 @@
                                               otherButtonTitles:nil];
         [alert show];
     }*/
-    
-    NSLog(@"BT view loaded");
 }
+
+#pragma mark Bluetooth Delegate Functions
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
@@ -361,8 +412,41 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     else {
         NSLog(@"Write to Bluetooth device was successful.");
     }
+}
+
+- (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)aPeripheral error:(NSError *)error
+{
+    NSLog(@"Disconnected from peripheral");
     
-    // TODO: indicate successful write in UI if this is the rxchar
+    // Disable UI elements
+    self.armSwitch.enabled = false;
+    self.settingsLabel.enabled = false;
+    self.soundLabel.enabled = false;
+    self.alarmTypeLabel.enabled = false;
+    self.alarmDelayLabel.enabled = false;
+    self.soundSwitch.enabled = false;
+    self.soundSwitch.enabled = false;
+    self.alarmSegmentControl.enabled = false;
+    self.alarmDelaySlider.enabled = false;
+    
+    self.statusLabel.text = @"Disconnected";
+    
+    if ( self.peripheral )
+    {
+        [self.peripheral setDelegate:nil];
+        self.peripheral = nil;
+    }
+}
+
+#pragma mark System Functions
+
+// Terminate Bluetooth connection if user presses Back button
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if (self.peripheral) {
+        [self.myCentralManager cancelPeripheralConnection:self.peripheral];
+    }
+    NSLog(@"Viewwilldisappear");
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
