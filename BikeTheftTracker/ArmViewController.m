@@ -142,12 +142,6 @@
     [self.alarmDelaySlider setValue:sliderIndex animated:true];
     
     
-    // Set audio alert status
-    
-    // Set audio alert delay
-    
-    // Set audio alert type
-    
     // Enable UI elements
     self.armSwitch.enabled = true;
     self.settingsLabel.enabled = true;
@@ -201,7 +195,7 @@
 // Alarm Type changed
 - (IBAction)alarmSegmentControlChanged:(id)sender {
     [self.bttDataToWrite setString:self.bttData];
-    [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(3, 1) withString:[NSString stringWithFormat:@"%d", ((UISegmentedControl *)sender).selectedSegmentIndex]];
+    [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(3, 1) withString:[NSString stringWithFormat:@"%ld", (long)((UISegmentedControl *)sender).selectedSegmentIndex]];
     [self bttUpdate];
 }
 
@@ -377,6 +371,7 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
             
             // Save data
             self.bttData = stringFromData;
+            NSLog(@"self.bttData:%@", self.bttData);//DEBUG
             
             // Parse data and display it
             [self bttConnected];
@@ -411,6 +406,7 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     }
     else {
         NSLog(@"Write to Bluetooth device was successful.");
+        NSLog(@"self.bttDataToWrite:%@", self.bttDataToWrite);//DEBUG
     }
 }
 
@@ -436,6 +432,8 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
         [self.peripheral setDelegate:nil];
         self.peripheral = nil;
     }
+    // Attempt to re-scan for the peripheral
+    [self bluetoothPoweredOn:self.myCentralManager];
 }
 
 #pragma mark System Functions
