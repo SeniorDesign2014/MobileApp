@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@interface ArmViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate>
+@interface ArmViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UITextFieldDelegate>
 
 @end

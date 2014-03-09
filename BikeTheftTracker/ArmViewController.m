@@ -12,7 +12,7 @@
 /* 
  DATA EXCHANGE FORMAT
  
- Byte0 	-	Secret Handshake
+ Byte0 	-	Audio alarm manual test
      App ID: (ascii “0” or hex 0x30)
  
  Byte1	- 	Arm/Disarm
@@ -77,6 +77,9 @@
 // "Alarm Type" label
 @property (weak, nonatomic) IBOutlet UILabel *alarmTypeLabel;
 
+// Alarm "Test" label
+@property (weak, nonatomic) IBOutlet UITextField *testButton;
+
 // "Alarm Delay" label
 @property (weak, nonatomic) IBOutlet UILabel *alarmDelayLabel;
 
@@ -110,12 +113,17 @@
     unichar armed[1];
     [self.bttData getCharacters:armed range:NSMakeRange(1, 1)];
     if (armed[0] == '0') {
-        self.armSwitch.on = FALSE;
+        self.armSwitch.on = false;
         self.statusLabel.text = @"Unarmed";
     }
     else if (armed[0] == '1') {
-        self.armSwitch.on = TRUE;
+        self.armSwitch.on = true;
         self.statusLabel.text = @"Armed";
+    }
+    else {
+        // This case may occur when app disconnects and reconnects
+        self.armSwitch.on = false;
+        self.statusLabel.text = @"Connected";
     }
     // TODO: add loading indicator for changing a value
     // text doesn't change until receive even though switch is flipped
@@ -151,6 +159,7 @@
     self.soundSwitch.enabled = true;
     self.soundSwitch.enabled = true;
     self.alarmSegmentControl.enabled = true;
+    self.testButton.enabled = true;
     self.alarmDelaySlider.enabled = true;
 }
 
@@ -199,6 +208,7 @@
     [self bttUpdate];
 }
 
+
 // Value of slider changed
 - (void)sliderChanged:(UISlider*)sender
 {
@@ -209,6 +219,41 @@
     [self.bttDataToWrite setString:self.bttData];
     [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(4, 1) withString:[self.alarmDelayValues objectAtIndex:index]];
     [self bttUpdate];
+}
+
+// Alarm "Test" button pressed
+- (BOOL) textFieldShouldBeginEditing:(UITextField *)textField
+{
+    /*
+        This delegate method always returns false in order to
+        disable text editing - we're using the textfield as a 
+        button.
+     */
+    
+    // Only accept presses if buttons are enabled
+    if (!textField.enabled)
+        return false;
+    
+    unichar test_flag[1];
+    [self.bttData getCharacters:test_flag range:NSMakeRange(0, 1)];
+    
+    if (test_flag[0] == '0') {
+     // Turn on the audio alarm
+     [self.bttDataToWrite setString:self.bttData];
+     [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(0, 1) withString:@"1"];
+     [self bttUpdate];
+     }
+     else if (test_flag[0] == '1') {
+     // Turn off the audio alarm
+     // We have coded the BTT firmware to shut off the test alarm after 5 seconds,
+     // so this transmission is just for safety.
+     
+     [self.bttDataToWrite setString:self.bttData];
+     [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(0, 1) withString:@"0"];
+     [self bttUpdate];
+     }
+    
+    return false;
 }
 
 // Write bttDataToWrite to the Bluetooth module
@@ -233,6 +278,7 @@
     
     // Init properties
     self.bttDataToWrite = [[NSMutableString alloc] init];
+    [self.testButton setDelegate:self];
     
     // Alarm delay slider values
     self.alarmDelayValues = [[NSArray alloc] initWithObjects:@"0", @"1", @"3", nil];
@@ -423,6 +469,7 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     self.soundSwitch.enabled = false;
     self.soundSwitch.enabled = false;
     self.alarmSegmentControl.enabled = false;
+    self.testButton.enabled = false;
     self.alarmDelaySlider.enabled = false;
     
     self.statusLabel.text = @"Disconnected";
@@ -444,7 +491,6 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     if (self.peripheral) {
         [self.myCentralManager cancelPeripheralConnection:self.peripheral];
     }
-    NSLog(@"Viewwilldisappear");
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil

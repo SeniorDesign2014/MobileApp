@@ -173,6 +173,9 @@
                                 <color key="textColor" red="0.36918308420000001" green="0.35632176809999999" blue="0.34260667919999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="testButtonPressed:" destination="LTp-tv-QJN" eventType="touchUpInside" id="LMo-v5-SsW"/>
+                                </connections>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" red="0.93123726222826086" green="0.30679061187185397" blue="0.26284151704797809" alpha="1" colorSpace="calibratedRGB"/>
@@ -188,6 +191,7 @@
                         <outlet property="soundLabel" destination="5vK-gA-B5a" id="6YM-kP-N6H"/>
                         <outlet property="soundSwitch" destination="Qzj-rO-DuX" id="1Bb-RO-D77"/>
                         <outlet property="statusLabel" destination="wbC-pw-3VB" id="pIW-Ez-h0j"/>
+                        <outlet property="testButton" destination="8pf-kp-6kz" id="tbQ-wP-fbP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FW2-02-Mli" userLabel="First Responder" sceneMemberID="firstResponder"/>
