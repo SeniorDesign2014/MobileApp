@@ -104,6 +104,28 @@
 
 #pragma mark BTT Control Functions
 
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    // Init properties
+    self.bttDataToWrite = [[NSMutableString alloc] init];
+    [self.testButton setDelegate:self];
+    
+    // Alarm delay slider values
+    self.alarmDelayValues = [[NSArray alloc] initWithObjects:@"0", @"1", @"3", nil];
+    
+    self.alarmDelaySlider.continuous = false; // Slider should not snap-to when dragging
+    [self.alarmDelaySlider addTarget:self
+                              action:@selector(sliderChanged:)
+                    forControlEvents:UIControlEventValueChanged];
+    
+    // Create a new Bluetooth central
+    // If Bluetooth is not turned on, ask the iPhone user to turn it on
+    self.myCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+}
+
 // Update UI to reflect new data from Bluetooth module
 - (void)bttConnected
 {
@@ -270,37 +292,6 @@
     // Write to Bluetooth device - callback is peripheral:didwritevalueforcharacteristics:error
     [self.peripheral writeValue:dataToWrite forCharacteristic:self.writecharacteristic
                       type:CBCharacteristicWriteWithResponse];
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    // Init properties
-    self.bttDataToWrite = [[NSMutableString alloc] init];
-    [self.testButton setDelegate:self];
-    
-    // Alarm delay slider values
-    self.alarmDelayValues = [[NSArray alloc] initWithObjects:@"0", @"1", @"3", nil];
-    
-    self.alarmDelaySlider.continuous = false; // Slider should not snap-to when dragging
-    [self.alarmDelaySlider addTarget:self
-               action:@selector(sliderChanged:)
-     forControlEvents:UIControlEventValueChanged];
-    
-    // Create a new Bluetooth central
-    self.myCentralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
-    
-    // If Bluetooth is not turned on, ask the iPhone user to turn it on
-    /*if (self.myCentralManager.state != CBCentralManagerStatePoweredOn) {
-        NSLog(@"Bluetooth is not turned on");
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bluetooth Connection"
-                                                        message:@"You must turn Bluetooth on in device settings in order to communicate with the Bike Theft Tracker."
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
-    }*/
 }
 
 #pragma mark Bluetooth Delegate Functions
