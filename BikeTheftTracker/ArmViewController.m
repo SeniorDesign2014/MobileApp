@@ -131,24 +131,27 @@
 {
     [self.loadingAnimation stopAnimating];
     
-    // Set armed status
-    unichar armed[1];
-    [self.bttData getCharacters:armed range:NSMakeRange(1, 1)];
-    if (armed[0] == '0') {
-        self.armSwitch.on = false;
-        self.statusLabel.text = @"Unarmed";
-    }
-    else if (armed[0] == '1') {
-        self.armSwitch.on = true;
-        self.statusLabel.text = @"Armed";
-    }
-    else {
-        // This case may occur when app disconnects and reconnects
-        self.armSwitch.on = false;
-        self.statusLabel.text = @"Connected";
-    }
-    // TODO: add loading indicator for changing a value
-    // text doesn't change until receive even though switch is flipped
+    // Add to main queue to speed up label text update
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        // Set armed status
+        unichar armed[1];
+        [self.bttData getCharacters:armed range:NSMakeRange(1, 1)];
+        if (armed[0] == '0') {
+            self.armSwitch.on = false;
+            self.statusLabel.text = @"Unarmed";
+        }
+        else if (armed[0] == '1') {
+            self.armSwitch.on = true;
+            self.statusLabel.text = @"Armed";
+        }
+        else {
+            // This case may occur when app disconnects and reconnects
+            self.armSwitch.on = false;
+            self.statusLabel.text = @"Connected";
+        }
+        // TODO: add loading indicator for changing a value
+        // text doesn't change until receive even though switch is flipped
+    }];
     
     // Set audio status
     unichar audio[1];
@@ -265,7 +268,8 @@
      [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(0, 1) withString:@"1"];
      [self bttUpdate];
      }
-     else if (test_flag[0] == '1') {
+     /* Do not try to disable test - interferes with firmware's countdown.
+      else if (test_flag[0] == '1') {
      // Turn off the audio alarm
      // We have coded the BTT firmware to shut off the test alarm after 5 seconds,
      // so this transmission is just for safety.
@@ -273,7 +277,7 @@
      [self.bttDataToWrite setString:self.bttData];
      [self.bttDataToWrite replaceCharactersInRange:NSMakeRange(0, 1) withString:@"0"];
      [self bttUpdate];
-     }
+     }*/
     
     return false;
 }
@@ -472,6 +476,7 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     }
     // Attempt to re-scan for the peripheral
     [self bluetoothPoweredOn:self.myCentralManager];
+    //[self.myCentralManager retrievePeripheralsWithIdentifiers:<#(NSArray *)#>]
 }
 
 #pragma mark System Functions

@@ -7,13 +7,47 @@
 //
 
 #import "AppDelegate.h"
+#include "GAEData.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound];
+    
     return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    NSLog(@"Registered for notification w/ token");
+    
+    NSString *deviceTokenString = [[NSString alloc] initWithString: [[[[deviceToken description]
+                                                      stringByReplacingOccurrencesOfString: @"<" withString: @""]
+                                                     stringByReplacingOccurrencesOfString: @">" withString: @""]
+                                                    stringByReplacingOccurrencesOfString: @" " withString: @""]];
+    
+    GAEData *oregonStateAccount = [[GAEData alloc] init];
+    NSString *const SetPushTokenURL = [NSString stringWithFormat:@"%@?clientid=00000001&pushtoken=%@", oregonStateAccount.SetPushTokenURL, deviceTokenString];
+    
+    // Push request
+    NSURLSession *session = [NSURLSession sharedSession];
+    [[session dataTaskWithURL:[NSURL URLWithString:SetPushTokenURL]
+            completionHandler:^(NSData *data,
+                                NSURLResponse *response,
+                                NSError *error) {
+                
+                NSLog(@"Request completed.");
+                if (error)
+                    NSLog(@"Error: %@", error);
+            }
+      ] resume];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    NSLog(@"Received push notification!");
+    
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

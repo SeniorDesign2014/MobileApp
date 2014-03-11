@@ -14,6 +14,8 @@
     self = [super init];
     if (self) {
         self.GetLocationURL = @"http://bikethefttracker.appspot.com/getlocation";
+        self.SetPushTokenURL = @"http://bikethefttracker.appspot.com/setpushtoken";
+        self.UpdateClientURL = @"http://bikethefttracker.appspot.com/updateclient";
     }
     return(self);
 }

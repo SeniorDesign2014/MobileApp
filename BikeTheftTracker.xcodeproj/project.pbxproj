@@ -26,6 +26,7 @@
 		46503B84188367BC008C7D48 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46503B83188367BC008C7D48 /* MapViewController.m */; };
 		46503B86188367D5008C7D48 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46503B85188367D5008C7D48 /* MapKit.framework */; };
 		46C1214C18A5BB2000545875 /* GAEData.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C1214B18A5BB2000545875 /* GAEData.m */; };
+		46CCDED418CD3D7200D23960 /* RegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46CCDED318CD3D7200D23960 /* RegistrationViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,8 @@
 		46503B85188367D5008C7D48 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		46C1214A18A5BB2000545875 /* GAEData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAEData.h; sourceTree = "<group>"; };
 		46C1214B18A5BB2000545875 /* GAEData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GAEData.m; sourceTree = "<group>"; };
+		46CCDED218CD3D7200D23960 /* RegistrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationViewController.h; sourceTree = "<group>"; };
+		46CCDED318CD3D7200D23960 /* RegistrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +135,8 @@
 				46503B5C188342A8008C7D48 /* AppDelegate.h */,
 				46503B5D188342A8008C7D48 /* AppDelegate.m */,
 				46503B5F188342A8008C7D48 /* Main.storyboard */,
+				46CCDED218CD3D7200D23960 /* RegistrationViewController.h */,
+				46CCDED318CD3D7200D23960 /* RegistrationViewController.m */,
 				461C242718960AD400514C0D /* ArmViewController.h */,
 				461C242818960AD400514C0D /* ArmViewController.m */,
 				46503B82188367BC008C7D48 /* MapViewController.h */,
@@ -281,6 +286,7 @@
 				46C1214C18A5BB2000545875 /* GAEData.m in Sources */,
 				46503B5A188342A8008C7D48 /* main.m in Sources */,
 				46503B84188367BC008C7D48 /* MapViewController.m in Sources */,
+				46CCDED418CD3D7200D23960 /* RegistrationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

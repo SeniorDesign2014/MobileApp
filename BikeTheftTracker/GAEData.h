@@ -10,6 +10,10 @@
 
 @interface GAEData : NSObject
 
-@property (nonatomic, weak) NSString *GetLocationURL;
+@property (nonatomic, strong) NSString *GetLocationURL;
+
+@property (nonatomic, strong) NSString *SetPushTokenURL;
+
+@property (nonatomic, strong) NSString *UpdateClientURL;
 
 @end
