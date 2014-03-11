@@ -7,14 +7,27 @@
 //
 
 #import "RegistrationViewController.h"
+#include "GAEData.h"
 
 @interface RegistrationViewController ()
+
+// Loading indicator in upper-right
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
 
 // Email address text field
 @property (weak, nonatomic) IBOutlet UITextField *emailField;
 
 // Phone number text field
 @property (weak, nonatomic) IBOutlet UITextField *numberField;
+
+// Email switch
+@property (weak, nonatomic) IBOutlet UISwitch *emailSwitch;
+
+// SMS switch
+@property (weak, nonatomic) IBOutlet UISwitch *smsSwitch;
+
+// Push notifications switch
+@property (weak, nonatomic) IBOutlet UISwitch *pushSwitch;
 
 @end
 
@@ -34,17 +47,6 @@
     [self.view addGestureRecognizer:tap];
 }
 
-// Done editing email field
-- (IBAction)emailEditEnd:(id)sender {
-    NSLog(@"email submit");
-}
-
-// Done editing phone number field
-- (IBAction)numberDidEnd:(id)sender {
-    NSLog(@"phone number submit");
-}
-
-
 // Done / Next key pressed in text field
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
@@ -52,11 +54,71 @@
     [textField resignFirstResponder];
     
     // Move to phone number field if applicable
-    if(textField == self.emailField)
+    if (textField == self.emailField)
         [self.numberField becomeFirstResponder];
     
-    return YES;
+    if (textField == self.numberField && [self.numberField.text length] != 10 && [self.numberField.text length] != 0) {
+        self.numberField.text = @"";
+        self.numberField.placeholder = @"Format: 5031234444";
+        return FALSE;
+    }
+    
+    // Update client preferences on server
+    [self updateServer];
+    
+    return TRUE;
 }
+
+// Email, SMS or push notification switch flipped
+- (IBAction)switchFlipped:(id)sender {
+    // Send updated preferences to the server
+    [self updateServer];
+}
+
+
+// Update client preferences on server
+- (void)updateServer
+{
+    /*
+        Message format:
+        <server>/updateclient?clientid=########[&email=[0/1]&address=abc@123.com][&sms=[0/1]&phonenumber=1503#######][&push=[0/1]]
+     */
+    
+    // Loading indicator
+    [self.loadingIndicator startAnimating];
+    
+    // Get data from forms
+    NSString *preferences = [NSString stringWithFormat:@"&email=%@%@%@&sms=%@%@%@&push=%@",
+                             self.emailSwitch.on ? @"1" : @"0", [self.emailField.text length] != 0 ? @"&address=" : @"",
+                             [self.emailField.text length] != 0 ? self.emailField.text : @"",
+                             self.smsSwitch.on ? @"1" : @"0", [self.numberField.text length] != 0 ? @"&phonenumber=" : @"",
+                             [self.numberField.text length] != 0 ? self.numberField.text : @"",
+                             self.pushSwitch.on ? @"1" : @"0"];
+    
+    // Receive closed-source server information from file
+    GAEData *oregonStateAccount = [[GAEData alloc] init];
+    NSString *const serverPrefs = [NSString stringWithFormat:@"%@?clientid=00000001%@", oregonStateAccount.UpdateClientURL, preferences];
+    
+    
+    // Send updated client preferences to server
+    NSURLSession *session = [NSURLSession sharedSession];
+    [[session dataTaskWithURL:[NSURL URLWithString:serverPrefs]
+            completionHandler:^(NSData *data,
+                                NSURLResponse *response,
+                                NSError *error) {
+                
+                NSLog(@"Request completed.");
+                if (error)
+                    NSLog(@"Error: %@", error);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.loadingIndicator stopAnimating];
+                }];
+            }
+      ] resume];
+}
+
+
+#pragma mark System Functions
 
 // Hide keyboard for outside click
 -(void)hideKeyboard {
@@ -64,9 +126,6 @@
     [self.emailField resignFirstResponder];
     [self.numberField resignFirstResponder];
 }
-
-
-#pragma mark System Functions
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

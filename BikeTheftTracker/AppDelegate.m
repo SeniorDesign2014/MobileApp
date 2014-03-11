@@ -47,7 +47,7 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
     NSLog(@"Received push notification!");
-    
+    //TODO: handle push notification when app is open
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
