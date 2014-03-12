@@ -17,7 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIStepper *stepper;
 
 // Current location/point
-@property (nonatomic, strong) NSNumber *currentIndex;
+@property (nonatomic, assign) NSInteger currentIndex;
 
 @end
 
@@ -70,6 +70,7 @@
                 
                 // Set stepper bound to number of locations available
                 self.stepper.maximumValue = [self.locations count] - 1;
+                self.stepper.value = self.stepper.maximumValue;
                 
                 // Display all known points on the map
                 [self displayLocations];
@@ -85,7 +86,7 @@
         Display all known locations/points on the map as pins
      */
     int index;
-    for (index = 0; index < [self.locations count]; index++) {
+    for (index = [self.locations count] - 1; index >= 0; index--) {
         CLLocationCoordinate2D eventLocation;
         eventLocation.latitude = [[[self.locations objectAtIndex:index] objectForKey:@"X"] floatValue];
         eventLocation.longitude = [[[self.locations objectAtIndex:index] objectForKey:@"Y"] floatValue];
@@ -159,15 +160,15 @@
 
 - (IBAction)stepperValueChanged:(id)sender {
     UIStepper *stepper = (UIStepper *) sender;
-    
-    [self showLocation:stepper.value];
+    self.currentIndex = ([self.locations count] - 1) - stepper.value;
+    [self showLocation:self.currentIndex];
 }
 
 
 - (void)didReceiveLocationData
 {
     self.currentIndex = 0;
-    [self showLocation:[self.currentIndex integerValue]];
+    [self showLocation:self.currentIndex];
 }
 
 - (void)didReceiveMemoryWarning
