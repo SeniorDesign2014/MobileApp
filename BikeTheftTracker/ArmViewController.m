@@ -43,6 +43,9 @@
 
 @property (nonatomic) CBCentralManager *myCentralManager;
 
+// Refresh button
+@property (weak, nonatomic) IBOutlet UIButton *refreshButton;
+
 // Bluetooth peripheral to connect to (BTT)
 @property (nonatomic) CBPeripheral *peripheral;
 
@@ -186,6 +189,9 @@
     self.alarmSegmentControl.enabled = true;
     self.testButton.enabled = true;
     self.alarmDelaySlider.enabled = true;
+    
+    self.refreshButton.hidden = true;
+    self.refreshButton.enabled = false;
 }
 
 // When the armed/disarmed/searching switch is flipped
@@ -467,6 +473,10 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     self.testButton.enabled = false;
     self.alarmDelaySlider.enabled = false;
     
+    self.refreshButton.hidden = false;
+    self.refreshButton.enabled = true;
+    
+    
     self.statusLabel.text = @"Disconnected";
     
     if ( self.peripheral )
@@ -474,7 +484,12 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
         [self.peripheral setDelegate:nil];
         self.peripheral = nil;
     }
+}
+
+// Refreshed button pressed
+- (IBAction)refreshButtonPressed:(id)sender {
     // Attempt to re-scan for the peripheral
+    [self.loadingAnimation startAnimating];
     [self bluetoothPoweredOn:self.myCentralManager];
     //[self.myCentralManager retrievePeripheralsWithIdentifiers:<#(NSArray *)#>]
 }

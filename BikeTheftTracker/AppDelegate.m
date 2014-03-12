@@ -20,7 +20,6 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    NSLog(@"Registered for notification w/ token");
     
     NSString *deviceTokenString = [[NSString alloc] initWithString: [[[[deviceToken description]
                                                       stringByReplacingOccurrencesOfString: @"<" withString: @""]
@@ -37,7 +36,7 @@
                                 NSURLResponse *response,
                                 NSError *error) {
                 
-                NSLog(@"Request completed.");
+                NSLog(@"Push token update completed.");
                 if (error)
                     NSLog(@"Error: %@", error);
             }

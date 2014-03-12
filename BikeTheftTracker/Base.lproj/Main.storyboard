@@ -230,6 +230,18 @@
                                     <segue destination="vXZ-lx-hvc" kind="modal" id="SjO-wP-Sx8"/>
                                 </connections>
                             </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a4e-OU-NnY">
+                                <rect key="frame" x="204" y="30" width="96" height="45"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="Refresh">
+                                    <color key="titleColor" red="0.36918308420000001" green="0.35632176809999999" blue="0.34260667919999999" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="refreshButtonPressed:" destination="LTp-tv-QJN" eventType="touchUpInside" id="4bh-eS-eEG"/>
+                                </connections>
+                            </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Bike Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="adD-vU-vmS">
                                 <rect key="frame" x="20" y="96" width="160" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -323,6 +335,7 @@
                         <outlet property="alarmTypeLabel" destination="BGr-Z5-gZu" id="phy-3Z-ogb"/>
                         <outlet property="armSwitch" destination="oAf-C3-nw5" id="gAj-sW-mum"/>
                         <outlet property="loadingAnimation" destination="VZV-wh-AFw" id="fiy-0q-K5l"/>
+                        <outlet property="refreshButton" destination="a4e-OU-NnY" id="gWc-m3-U9F"/>
                         <outlet property="settingsLabel" destination="heJ-5Z-zDX" id="Qn3-uZ-eiV"/>
                         <outlet property="soundLabel" destination="5vK-gA-B5a" id="6YM-kP-N6H"/>
                         <outlet property="soundSwitch" destination="Qzj-rO-DuX" id="1Bb-RO-D77"/>
@@ -346,7 +359,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="h0f-Om-Iky">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h0f-Om-Iky">
                                 <rect key="frame" x="0.0" y="86" width="320" height="394"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
@@ -401,6 +414,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="3u5-OF-f2u"/>
+        <segue reference="SjO-wP-Sx8"/>
     </inferredMetricsTieBreakers>
 </document>
