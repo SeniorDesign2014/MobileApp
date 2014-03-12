@@ -8,13 +8,19 @@
 
 #import "MapViewController.h"
 
-
 @interface MapViewController ()
 
 // Text above the map ("Loading..." by default)
 @property (weak, nonatomic) IBOutlet UILabel *mapUpperCaption;
 
+// Buttons for switching between locations/points
+@property (weak, nonatomic) IBOutlet UIStepper *stepper;
+
+// Current location/point
+@property (nonatomic, strong) NSNumber *currentIndex;
+
 @end
+
 
 @implementation MapViewController
 
@@ -32,7 +38,7 @@
     [super viewDidLoad];
     
     // Add newline to label
-    self.mapUpperCaption.text = @"Searching...\r ";
+    //self.mapUpperCaption.text = @"Searching...\r ";
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -41,7 +47,7 @@
     
     // Object containing our Google App Engine URLs (closed-source for privacy)
     GAEData *oregonStateAccount = [[GAEData alloc] init];
-    NSString *const GetLocationURL = [NSString stringWithFormat:@"%@", oregonStateAccount.GetLocationURL];
+    NSString *const GetLocationURL = [NSString stringWithFormat:@"%@?clientid=00000001", oregonStateAccount.GetLocationURL];
     
     NSLog(@"appid: %@", self.appid);
     
@@ -62,34 +68,58 @@
                 NSLog(@"JSON data: %@", self.locations);
                 //NSLog(@"First location - X: %f", [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue]);
                 
+                // Set stepper bound to number of locations available
+                self.stepper.maximumValue = [self.locations count] - 1;
+                
+                // Display all known points on the map
+                [self displayLocations];
+                
                 [self didReceiveLocationData];
             }
       ] resume];
 }
 
-- (void)didReceiveLocationData
+- (void)displayLocations
+{
+    /*
+        Display all known locations/points on the map as pins
+     */
+    int index;
+    for (index = 0; index < [self.locations count]; index++) {
+        CLLocationCoordinate2D eventLocation;
+        eventLocation.latitude = [[[self.locations objectAtIndex:index] objectForKey:@"X"] floatValue];
+        eventLocation.longitude = [[[self.locations objectAtIndex:index] objectForKey:@"Y"] floatValue];
+        
+        /*
+         Display a point where the cooridnates are
+         */
+        MKPointAnnotation *point = [[MKPointAnnotation alloc] init];
+        [point setCoordinate:(CLLocationCoordinate2D)CLLocationCoordinate2DMake(eventLocation.latitude, eventLocation.longitude)];
+        
+        // Add title for point (the coordinates)
+        NSString *title = [NSString stringWithFormat:@"%@, %@", [[self.locations objectAtIndex:index] objectForKey:@"X"], [[self.locations objectAtIndex:index] objectForKey:@"Y"]];
+        [point setTitle:title];
+        //[self.point setSubtitle:[[locations objectAtIndex:index] objectForKey:@"Clientid"]];
+        
+        // Add the annotation point
+        [self.mapView addAnnotation:point];
+    }
+}
+
+- (void)showLocation:(int)index
 {
     CLLocationCoordinate2D eventLocation;
-    eventLocation.latitude = [[[self.locations objectAtIndex:0] objectForKey:@"X"] floatValue];
-    eventLocation.longitude = [[[self.locations objectAtIndex:0] objectForKey:@"Y"] floatValue];
-    
-    // Display a point where the cooridnates are
-    self.point = [[MKPointAnnotation alloc] init];
-    [self.point setCoordinate:(CLLocationCoordinate2D)CLLocationCoordinate2DMake(eventLocation.latitude, eventLocation.longitude)];
-    
-    // Add title
-    [self.point setTitle:[[self.locations objectAtIndex:0] objectForKey:@"Date"]];
-    //[self.point setSubtitle:[[locations objectAtIndex:0] objectForKey:@"Clientid"]];
-    
-    // Add the annotation point
-    [self.mapView addAnnotation:self.point];
+    eventLocation.latitude = [[[self.locations objectAtIndex:index] objectForKey:@"X"] floatValue];
+    eventLocation.longitude = [[[self.locations objectAtIndex:index] objectForKey:@"Y"] floatValue];
     
     // The window to display around the event
     MKCoordinateRegion windowRegion = MKCoordinateRegionMakeWithDistance(eventLocation, 800, 800);
     // Zoom to the location of the Last.FM event found in ViewController
     [_mapView setRegion:windowRegion animated:YES];
     
-    // Display the time at which this location was received by the server
+    /*
+        Display the time at which this location was received by the server
+     */
     NSDateFormatter *dateFromServerFormatter, *dateOfLocationFormatter;
     NSDate *dateOfLocation;
     NSString *locationDate, *locationTime;
@@ -101,8 +131,8 @@
     [dateFromServerFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSSSSS'Z'"];
     [dateFromServerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     
-    dateOfLocation = [dateFromServerFormatter dateFromString:[[self.locations objectAtIndex:0] objectForKey:@"Date"]];
-    NSLog(@"iOS date: %@", dateOfLocation);
+    dateOfLocation = [dateFromServerFormatter dateFromString:[[self.locations objectAtIndex:index] objectForKey:@"Date"]];
+    //NSLog(@"iOS date: %@", dateOfLocation);
     
     // Convert the NSDate to a user-visible date string.
     
@@ -118,14 +148,26 @@
     [dateOfLocationFormatter setTimeStyle:NSDateFormatterShortStyle];
     
     locationTime = [dateOfLocationFormatter stringFromDate:dateOfLocation];
-    
-    NSLog(@"Formatted date: %@", locationTime);
+    //NSLog(@"Formatted date: %@", locationTime);
     
     // Update the Map caption on the main thread to avoid long delay
     dispatch_async(dispatch_get_main_queue(), ^{
         self.mapUpperCaption.text = [NSString stringWithFormat:@"Spotted on %@ at %@", locationDate, locationTime];
     });
+}
+
+
+- (IBAction)stepperValueChanged:(id)sender {
+    UIStepper *stepper = (UIStepper *) sender;
     
+    [self showLocation:stepper.value];
+}
+
+
+- (void)didReceiveLocationData
+{
+    self.currentIndex = 0;
+    [self showLocation:[self.currentIndex integerValue]];
 }
 
 - (void)didReceiveMemoryWarning
