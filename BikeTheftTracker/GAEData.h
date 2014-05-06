@@ -16,4 +16,6 @@
 
 @property (nonatomic, strong) NSString *UpdateClientURL;
 
+@property (nonatomic, strong) NSString *GetPreferencesURL;
+
 @end

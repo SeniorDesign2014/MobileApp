@@ -16,6 +16,7 @@
         self.GetLocationURL = @"http://bikethefttracker.appspot.com/getlocation";
         self.SetPushTokenURL = @"http://bikethefttracker.appspot.com/setpushtoken";
         self.UpdateClientURL = @"http://bikethefttracker.appspot.com/updateclient";
+        self.GetPreferencesURL = @"http://bikethefttracker.appspot.com/getpreferences";
     }
     return(self);
 }

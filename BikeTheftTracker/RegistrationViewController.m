@@ -39,12 +39,69 @@
 {
     [super viewDidLoad];
     
+    // Loading indicator
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.loadingIndicator startAnimating];
+    }];
+    
     // Init properties
     [self.emailField setDelegate:self];
     [self.numberField setDelegate:self];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];  // For hiding the keyboard
     
     [self.view addGestureRecognizer:tap];
+    
+    // --- Load preference data from server ---
+    
+    /* 
+     Example response:
+ [{"Email":false,"Sms":true,"Push":false,"Address":"abcd@efgh.com","Phonenumber":"1971#######","Clientid":"########","Date":"2014-05-06T20:45:01.502244Z"}]
+     */
+    
+    // Object containing our Google App Engine URLs (closed-source for privacy)
+    GAEData *oregonStateAccount = [[GAEData alloc] init];
+    NSString *const GetPreferencesURL = [NSString stringWithFormat:@"%@?clientid=00000001", oregonStateAccount.GetPreferencesURL];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    [[session dataTaskWithURL:[NSURL URLWithString:GetPreferencesURL]
+            completionHandler:^(NSData *data,
+                                NSURLResponse *response,
+                                NSError *error) {
+                // Handle response
+                if (error) {
+                    NSLog(@"Problem loading preferences from server.");
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.loadingIndicator stopAnimating];
+                    }];
+                    return;
+                }
+                NSError *jsonError;
+                NSArray *preferencesFromServer = [NSJSONSerialization JSONObjectWithData:data
+                                                                               options:NSJSONReadingAllowFragments
+                                                                                 error:&jsonError];
+                if (jsonError) {
+                    NSLog(@"Problem parsing preferences from server.");
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.loadingIndicator stopAnimating];
+                    }];
+                    return;
+                }
+                
+                NSArray *prefs = [[NSArray alloc] initWithArray:preferencesFromServer];
+                
+                // Populate fields with server data
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    self.emailField.text = [[prefs objectAtIndex:0] objectForKey:@"Address"];
+                    // Substring chops off the first character (country code)
+                    self.numberField.text = [[[prefs objectAtIndex:0] objectForKey:@"Phonenumber"] substringFromIndex:1];
+                    self.emailSwitch.on = [[[prefs objectAtIndex:0] objectForKey:@"Email"] boolValue];
+                    self.smsSwitch.on = [[[prefs objectAtIndex:0] objectForKey:@"Sms"] boolValue];
+                    self.pushSwitch.on = [[[prefs objectAtIndex:0] objectForKey:@"Push"] boolValue];
+                    
+                    [self.loadingIndicator stopAnimating];
+                }];
+            }
+      ] resume];
 }
 
 // Done / Next key pressed in text field
