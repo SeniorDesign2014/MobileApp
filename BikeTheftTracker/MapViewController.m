@@ -72,6 +72,10 @@
                 self.stepper.maximumValue = [self.locations count] - 1;
                 self.stepper.value = self.stepper.maximumValue;
                 
+                // If there are no locations, return.
+                if ([self.locations count] < 1)
+                    return;
+                
                 // Display all known points on the map
                 [self displayLocations];
                 
@@ -159,6 +163,9 @@
 
 
 - (IBAction)stepperValueChanged:(id)sender {
+    // If there are no locations, return.
+    if ([self.locations count] < 1)
+        return;
     UIStepper *stepper = (UIStepper *) sender;
     self.currentIndex = ([self.locations count] - 1) - stepper.value;
     [self showLocation:self.currentIndex];
